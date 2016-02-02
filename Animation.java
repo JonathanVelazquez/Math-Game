@@ -1,8 +1,13 @@
-package jabarigame.framework;
 
 import java.awt.Image;
 import java.util.ArrayList;
 
+/**
+ * This class handles animations. I have no idea how most of this class actually
+ * functions BUT this class works as it is so it probably does not need any
+ * editing
+ *
+ */
 public class Animation {
 
 	private ArrayList frames;
