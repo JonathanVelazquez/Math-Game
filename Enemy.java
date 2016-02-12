@@ -6,17 +6,16 @@ import java.awt.Rectangle;
  * boxes, and whether or not it should be destroyed
  */
 public class Enemy {
-
-	private int speedY;
 	private double centerX, centerY;
 
 	// these are the hit boxes
 	public Rectangle r = new Rectangle(0, 0, 0, 0);
 
 	// how many shots from a laser it takes to destroy the ship
-	public int health = 2;
+	public int health = 1;
+	private int number;
 
-	private double movementSpeedY;
+	public final double MOVEMENT_SPEED = 1;
 	private boolean isMovingY = true;
 
 	private boolean isDead = false;
@@ -62,17 +61,10 @@ public class Enemy {
 
 		// moves y position
 		if (centerY < StartingClass.MIDDLE_Y - 100) {
-			movementSpeedY = 1;
-			centerY += movementSpeedY;
+			centerY += MOVEMENT_SPEED;
 		} else {
-			movementSpeedY = 0;
-			centerY += movementSpeedY;
-		}
-
-		if (movementSpeedY == 0) {
 			isMovingY = false;
 		}
-
 	}
 
 	// ACCESSOR AND MUTATOR METHODS
@@ -85,20 +77,16 @@ public class Enemy {
 		return centerY;
 	}
 
+	public void setCenterY(double centerY) {
+		this.centerY = centerY;
+	}
+	
 	public void setCenterX(double d) {
 		this.centerX = d;
 	}
 
 	public void setCenterY(int centerY) {
 		this.centerY = centerY;
-	}
-
-	public int getSpeedY() {
-		return speedY;
-	}
-
-	public void setSpeedY(int speedY) {
-		this.speedY = speedY;
 	}
 
 	public boolean isMovingY() {
@@ -115,5 +103,13 @@ public class Enemy {
 
 	public void setDead(boolean isDead) {
 		this.isDead = isDead;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
 	}
 }

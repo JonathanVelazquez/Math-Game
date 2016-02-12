@@ -55,7 +55,7 @@ public class Projectile {
 	private void checkCollision() {
 
 		for (int i = 0; i < StartingClass.downEnemies.size(); i++) {
-			
+
 			/*
 			 * if a laser hits a ship, the visibility is removed, and the health
 			 * of the ship that was hit decreases by 1. If the ship's health is
@@ -69,10 +69,16 @@ public class Projectile {
 					StartingClass.downEnemies.get(i).health -= 1;
 				}
 				if (StartingClass.downEnemies.get(i).health == 0) {
+					StartingClass startingClass = new StartingClass();
+					if (startingClass.getNumber1() + startingClass.getNumber2() == StartingClass.downEnemies.get(i).getNumber()) {
+						StartingClass.readyForNewEquation = true;
+						StartingClass.score += 1;
+					} else {
+						StartingClass.score -= 2;
+						StartingClass.health -= 2;
+					}
 					StartingClass.downEnemies.remove(i);
 					StartingClass.downLasers.remove(i);
-
-					StartingClass.score += 5;
 				}
 			}
 		}

@@ -35,10 +35,13 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 
 	// Lasers and spaceships are both listed as enemies because they are
 	// coupled.
-	public static Spaceship spaceships3, spaceship1, spaceship2, spaceship3, laser, laserDown, laserRight, laserLeft;
+	public static Spaceship spaceships3, spaceship1, laser, laserDown;
 
 	public static int score = 0;
-	private double health = 150; // should begin at 150
+	public static double health = 150; // should begin at 150
+	private String equation = "xxxxx";
+	private static int number1, number2;
+	public static boolean readyForNewEquation = true;
 
 	// Only used for write the score
 	private Font font = new Font(null, Font.BOLD, 30);
@@ -77,9 +80,6 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 
 	// lasers from laser gun
 	private ArrayList<Projectile> projectiles;
-
-	// timing for enemy spawns
-	private int time = 5000;
 
 	// Used to scroll background
 	private static Background bg1, bg2;
@@ -173,7 +173,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	@Override
 	public void start() {
 
-		currentGameOver = neither;
+		currentGameOver = yes;
 
 		// places background
 		bg1 = new Background(0, 0);
@@ -185,18 +185,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 		Thread thread = new Thread(this);
 		thread.start();
 
-		// Creates a new Thread that that spawns enemies
-		Thread enemySpawner = new Thread(new Runnable() {
-			/**
-			 * Continues the thread while the game is running
-			 */
-			public void run() {
-				while (state == GameState.Running) {
-					createDownShips();
-				}
-			}
-		});
-		enemySpawner.start();
+		createDownShips();
 	}
 
 	/*
@@ -225,8 +214,11 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 				state = GameState.Dead;
 			}
 
+			if(downEnemies.size() == 1) {
+				createDownShips();
+			}
 			// used for testing
-			System.out.println("I am running now " + frame);
+			 System.out.println("I am running now " + frame);
 			frame++;
 
 			// Moves the laser gun
@@ -378,6 +370,11 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 				if (!downEnemies.get(i).isDead()) {
 					g.drawImage(downShipAnim.getImage(), (int) downEnemies.get(i).getCenterX() - 48,
 							(int) downEnemies.get(i).getCenterY() - 48, this);
+
+					g.setFont(font);
+					g.setColor(Color.CYAN);
+					g.drawString(Integer.toString(downEnemies.get(i).getNumber()),
+							(int) downEnemies.get(i).getCenterX() - 35, (int) downEnemies.get(i).getCenterY() - 35);
 				} else {
 					/*
 					 * trying to get death animation to work here
@@ -397,6 +394,14 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 			g.setFont(font);
 			g.setColor(Color.WHITE);
 			g.drawString(Integer.toString(score), 300, 740);
+
+			g.setColor(Color.CYAN);
+
+			// Displays the problem to be solved
+			if (readyForNewEquation) {
+				equation = getEquation();
+			}
+			g.drawString(equation, 50, 740);
 
 			// displays health bar
 			g.setColor(Color.WHITE);
@@ -446,7 +451,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 			g.drawImage(gameOver, 50, 0, this);
 			g.drawImage(currentGameOver, 50, 500, this);
 
-			System.out.println("lost");
+			// System.out.println("lost");
 			repaint();
 		}
 
@@ -536,7 +541,11 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 		case KeyEvent.VK_SPACE:
 			if (state == GameState.Running) {
 				// makes it so player can't fire a "stream" of lasers
-				if (projectiles.get(projectiles.size() - 1).getY() + 150 < laserGun.getCenterY()) {
+				if (projectiles.size() > 1) {
+					if (projectiles.get(projectiles.size() - 1).getY() + 150 < laserGun.getCenterY()) {
+						laserGun.setReadyToFire(true);
+					}
+				} else {
 					laserGun.setReadyToFire(true);
 				}
 			}
@@ -566,8 +575,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 
 		score = 0;
 		health = 150;
-		time = 5000;
-
+		
 		init();
 		start();
 		run();
@@ -578,32 +586,13 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	 * Spawns space ships
 	 */
 	private void createDownShips() {
-		Random generator = new Random();
 
-		// places the ship in a random location across the top of the screen
-		int randomNumber = generator.nextInt(500);
-		spaceships3 = new Spaceship(randomNumber, -80);
-		downEnemies.add(spaceships3);
+		// creates 5 ships
+		for (int i = 0; i < 5; i++) {
+			downEnemies.add(new Spaceship((100 * i) + 65, -80));
 
-		// creates corresponding lasers
-		laserDown = new Spaceship(MIDDLE_X, MIDDLE_Y);
-		downLasers.add(laserDown);
-
-		// thread pauses for a some amount of time to sporadically spawn enemies
-		try {
-			Thread.sleep(time);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		int randomTime = generator.nextInt((100 - 50) + 1) + 50;
-
-		// decreases the time that the Thread sleeps to increase the speed of
-		// enemy spawn
-		time -= randomTime;
-
-		// This is the smallest amount of time the thread sleeps
-		if (time < 1000) {
-			time = 1000;
+			// creates corresponding lasers
+			downLasers.add(new Spaceship(MIDDLE_X, MIDDLE_Y));
 		}
 	}
 
@@ -622,6 +611,24 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 			}
 		});
 		dieShip.start();
+	}
+
+	/**
+	 * Creates the equation to be solved based on the numbers provided by the
+	 * crows
+	 * 
+	 * @return the equation as a String
+	 */
+	private String getEquation() {
+		Random generator = new Random();
+
+		// picks a random enemy
+		int randomEnemyIndex = generator.nextInt(downEnemies.size());
+		number1 = generator.nextInt(downEnemies.get(randomEnemyIndex).getNumber());
+		number2 = downEnemies.get(randomEnemyIndex).getNumber() - number1;
+
+		readyForNewEquation = false;
+		return number1 + " + " + number2 + " = ?";
 	}
 
 	/**
@@ -650,4 +657,17 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	public static LaserGun getLaserGun() {
 		return laserGun;
 	}
+
+	public int getNumber1() {
+		return number1;
+	}
+
+	public int getNumber2() {
+		return number2;
+	}
+	
+	public double getHealth() {
+		return health;
+	}
+	 
 }
