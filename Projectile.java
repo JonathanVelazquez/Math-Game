@@ -3,6 +3,8 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
+import operations.Operation;
+
 /**
  * Handles when a laser from the laser gun hits a spaceship
  *
@@ -53,7 +55,7 @@ public class Projectile {
 	 * Checks to see if the laser collides with a spaceship
 	 */
 	private void checkCollision() {
-
+		Operation op = new Operation();
 		for (int i = 0; i < StartingClass.downEnemies.size(); i++) {
 
 			/*
@@ -69,8 +71,22 @@ public class Projectile {
 					StartingClass.downEnemies.get(i).health -= 1;
 				}
 				if (StartingClass.downEnemies.get(i).health == 0) {
-					StartingClass startingClass = new StartingClass();
-					if (startingClass.getNumber1() + startingClass.getNumber2() == StartingClass.downEnemies.get(i).getNumber()) {
+					/**
+					 * polymorphing operation types
+					 * @kyle Au
+					 */
+					if(StartingClass.getAddMode()){
+						op = StartingClass.add;
+					}else if (StartingClass.getSubMode()){
+						op = StartingClass.sub;
+					}else if (StartingClass.getDivisionMode()){
+						op = StartingClass.div;
+					}else if (StartingClass.getMulMode()){
+						op = StartingClass.mul;
+					}
+					
+					//check for right ship
+					if (op.isRightShip()) {
 						StartingClass.readyForNewEquation = true;
 						StartingClass.score += 1;
 					} else {

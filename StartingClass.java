@@ -11,6 +11,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
 
+import operations.Addition;
+import operations.Division;
+import operations.Multiplication;
+import operations.Operation;
+import operations.Subtraction;
+
 /**
  * This class is the main that takes all the different classes and puts them
  * together to actually run the game.
@@ -40,7 +46,6 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	public static int score = 0;
 	public static double health = 150; // should begin at 150
 	private String equation = "xxxxx";
-	private static int number1, number2;
 	public static boolean readyForNewEquation = true;
 
 	// Only used for write the score
@@ -48,6 +53,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 
 	private Image image, background;
 
+	
 	// Pictures of enemies
 	private Image spaceshipDown, laser1;
 
@@ -85,7 +91,17 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	private static Background bg1, bg2;
 
 	public static int currentIndex;
+	
+	public static Operation add = new Addition();
+	public static Subtraction sub = new Subtraction();
+	public static Division div = new Division();
+	public static Multiplication mul = new Multiplication();
+	private static boolean additionMode ;
+	private static  boolean subtractionMode ;
+	private  static boolean multiplicationMode;
+	private static boolean divisionMode  ;
 
+	
 	/**
 	 * This method initializes all of the objects and images that will be in the
 	 * game. Read the actual Java documentation for this method for more
@@ -93,9 +109,10 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	 */
 	@Override
 	public void init() {
-
+		//default;
+		additionMode = true;
 		// Size of screen the game is in
-		setSize(480, 800);
+		setSize(600, 800);
 		setBackground(Color.BLACK);
 
 		// Idk what this does
@@ -136,6 +153,8 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 		yes = getImage(base, "data/RestartYes.png");
 		no = getImage(base, "data/RestartNo.png");
 		neither = getImage(base, "data/RestartNone.png");
+		//sign setup
+		
 
 		anim = new Animation();
 		anim.addFrame(laserGunImage, 1250);
@@ -402,7 +421,8 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 				equation = getEquation();
 			}
 			g.drawString(equation, 50, 740);
-
+			
+			
 			// displays health bar
 			g.setColor(Color.WHITE);
 			g.fillRect(300, 750, 154, 29);
@@ -417,7 +437,26 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 			}
 
 			g.fillRect(302, 752, (int) health, 25);
-
+			
+			// gamemode
+			font.isBold();
+			g.setFont(font);
+			//g.drawString("use keys to cyle through game mode", 200, 50);
+			g.drawString("game mode", 300, 100);
+			
+			g.setColor(Color.ORANGE);
+			if(this.additionMode){
+				g.drawString( " + ", 300 ,150);
+			}else if (this.subtractionMode){
+				g.drawString( " - " , 300, 150);
+			}else if (this.divisionMode){
+				g.drawString(" / ", 300, 150);
+			}else{
+				g.drawString( " x ", 300,150);
+			}
+			
+			
+			
 			// TESTING FOR HIT BOX
 
 			/*
@@ -499,11 +538,46 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 
 					// makes it so player can't fire a "stream" of lasers.
 					// Must release the space bar before firing again
-					laserGun.setReadyToFire(false);
+					/**
+					 * for some reason if this is on, it will switch the sign back to plus
+					 * 
+					 */
+					//laserGun.setReadyToFire(false);
 				}
 				break;
 			}
-
+		case KeyEvent.VK_1:
+			if(state == GameState.Running){
+				this.additionMode = true;
+				this.subtractionMode = false;
+				this.divisionMode = false;
+				this.multiplicationMode = false;
+			}
+			break;
+		case KeyEvent.VK_2:
+			if(state == GameState.Running){
+				this.additionMode = false;
+				this.subtractionMode = true;
+				this.divisionMode = false;
+				this.multiplicationMode = false;
+			}
+			break;
+		case KeyEvent.VK_3:
+			if(state == GameState.Running){
+				this.additionMode = false;
+				this.subtractionMode = false;
+				this.divisionMode = true;
+				this.multiplicationMode = false;
+			}
+			break;
+		case KeyEvent.VK_4:
+			if(state == GameState.Running){
+				this.additionMode = false;
+				this.subtractionMode = false;
+				this.divisionMode = false;
+				this.multiplicationMode = true;
+			}
+			break;
 			// Only usable when the game is over
 		case KeyEvent.VK_ENTER:
 			if (state == GameState.Dead) {
@@ -536,7 +610,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 				laserGun.stopRight();
 			}
 			break;
-
+		
 		// stop shooting (but why would you really want to do that?!)
 		case KeyEvent.VK_SPACE:
 			if (state == GameState.Running) {
@@ -588,7 +662,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	private void createDownShips() {
 
 		// creates 5 ships
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 2; i++) {
 			downEnemies.add(new Spaceship((100 * i) + 65, -80));
 
 			// creates corresponding lasers
@@ -620,15 +694,34 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	 * @return the equation as a String
 	 */
 	private String getEquation() {
+		Operation op = new Operation();
 		Random generator = new Random();
-
+		readyForNewEquation = false;
+		String sign = "";
 		// picks a random enemy
 		int randomEnemyIndex = generator.nextInt(downEnemies.size());
-		number1 = generator.nextInt(downEnemies.get(randomEnemyIndex).getNumber());
-		number2 = downEnemies.get(randomEnemyIndex).getNumber() - number1;
-
-		readyForNewEquation = false;
-		return number1 + " + " + number2 + " = ?";
+		int ranEnemy = downEnemies.get(randomEnemyIndex).getNumber();
+		/**
+		 * polymorhphing operation types here
+		 */
+		if(this.additionMode){
+			op =  add;
+			op.initiate(ranEnemy);
+			sign = " + " ;
+		}else if (this.subtractionMode){
+			op = sub;
+			op.initiate(ranEnemy);
+			sign = " - ";
+		}else if (this.divisionMode){
+			op = this.div;
+			op.initiate(ranEnemy);
+			sign = " / ";
+		}else if (this.multiplicationMode){
+			op = this.mul;
+			op.initiate(ranEnemy);
+			sign = " * ";
+		}
+		return op.getLeft() + sign + op.getRight()+ " = ?";
 	}
 
 	/**
@@ -658,16 +751,20 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 		return laserGun;
 	}
 
-	public int getNumber1() {
-		return number1;
-	}
-
-	public int getNumber2() {
-		return number2;
-	}
-	
 	public double getHealth() {
 		return health;
+	}
+	public static boolean getAddMode(){
+		return additionMode;
+	}
+	public static boolean getSubMode(){
+		return subtractionMode;
+	}
+	public static boolean getMulMode(){
+		return multiplicationMode;
+	}
+	public static boolean getDivisionMode(){
+		return divisionMode;
 	}
 	 
 }
