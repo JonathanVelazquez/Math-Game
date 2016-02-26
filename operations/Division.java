@@ -19,6 +19,10 @@ public class Division extends Operation{
 		}
 		return false;
 	}
+	@Override
+	public int shipAnswer(){
+		return answer;
+	}
 
 	
 }

@@ -24,5 +24,8 @@ public class Multiplication extends Operation{
 		}
 		return false;
 	}
-	
+	@Override 
+	public int shipAnswer(){
+		return leftHandSide*rightHandSide;
+	}
 }
