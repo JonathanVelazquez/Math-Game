@@ -100,8 +100,8 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	private static  boolean subtractionMode ;
 	private  static boolean multiplicationMode;
 	private static boolean divisionMode  ;
-
-	
+	private SoundPlayer soundPlayer = new SoundPlayer();
+	private int numberOfShips;
 	/**
 	 * This method initializes all of the objects and images that will be in the
 	 * game. Read the actual Java documentation for this method for more
@@ -109,6 +109,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	 */
 	@Override
 	public void init() {
+		this.setNumberOfShips(3);
 		//default;
 		additionMode = true;
 		// Size of screen the game is in
@@ -226,9 +227,8 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	@Override
 	public void run() {
 		int frame = 1; // used for testing
-
+		soundPlayer.playTheme();
 		while (state == GameState.Running) {
-
 			if (health <= 0) {
 				state = GameState.Dead;
 			}
@@ -535,7 +535,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 			if (laserGun.isReadyToFire()) {
 				if (state == GameState.Running) {
 					laserGun.shoot();
-
+					soundPlayer.playLaser();
 					// makes it so player can't fire a "stream" of lasers.
 					// Must release the space bar before firing again
 					/**
@@ -660,11 +660,9 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	 * Spawns space ships
 	 */
 	private void createDownShips() {
-
 		// creates 5 ships
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < numberOfShips; i++) {
 			downEnemies.add(new Spaceship((100 * i) + 65, -80));
-
 			// creates corresponding lasers
 			downLasers.add(new Spaceship(MIDDLE_X, MIDDLE_Y));
 		}
@@ -702,7 +700,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 		int randomEnemyIndex = generator.nextInt(downEnemies.size());
 		int ranEnemy = downEnemies.get(randomEnemyIndex).getNumber();
 		/**
-		 * polymorhphing operation types here
+		 * polymohphing operation types here
 		 */
 		if(this.additionMode){
 			op =  add;
@@ -723,7 +721,11 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 		}
 		return op.getLeft() + sign + op.getRight()+ " = ?";
 	}
-
+	void playtheme(){
+		while(this.state == GameState.Running){
+			soundPlayer.playTheme();
+		}
+	}
 	/**
 	 * Accessor method for first background image
 	 * 
@@ -765,6 +767,12 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	}
 	public static boolean getDivisionMode(){
 		return divisionMode;
+	}
+	public void setNumberOfShips(int n){
+		this.numberOfShips = n;
+	}
+	public int getNumberOfships(){
+		return this.numberOfShips;
 	}
 	 
 }

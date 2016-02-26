@@ -15,7 +15,7 @@ public class Enemy {
 	public int health = 1;
 	private int number;
 
-	public final double MOVEMENT_SPEED = 0.5;
+	public final double MOVEMENT_SPEED = 1;
 	private boolean isMovingY = true;
 
 	private boolean isDead = false;

@@ -55,6 +55,7 @@ public class Projectile {
 	 * Checks to see if the laser collides with a spaceship
 	 */
 	private void checkCollision() {
+		SoundPlayer soundPlayer = new SoundPlayer();
 		Operation op = new Operation();
 		for (int i = 0; i < StartingClass.downEnemies.size(); i++) {
 
@@ -86,12 +87,15 @@ public class Projectile {
 					}
 					
 					//check for right ship
-					if (op.isRightShip()) {
+					if (op.shipAnswer() == StartingClass.downEnemies.get(i).getNumber()) {
 						StartingClass.readyForNewEquation = true;
 						StartingClass.score += 1;
+						soundPlayer.playDing();
 					} else {
+						StartingClass.readyForNewEquation = true;
 						StartingClass.score -= 2;
 						StartingClass.health -= 2;
+						soundPlayer.playCrow();
 					}
 					StartingClass.downEnemies.remove(i);
 					StartingClass.downLasers.remove(i);
