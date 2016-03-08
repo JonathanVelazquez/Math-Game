@@ -135,14 +135,15 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 		}
 
 		// Image Setups
-		background = getImage(base, "data/background.png");
+		background = getImage(base, "data/newBackGround.png");
 
 		earth = getImage(base, "data/Earth.png");
 
 		laserGunImage = getImage(base, "data/LaserGun3.png");
 
-		spaceshipDown = getImage(base, "data/spaceship1.png");
+		spaceshipDown = getImage(base, "data/NewCrow.png");
 
+		
 		downOrangeFlame = getImage(base, "data/DownShipOrangeFlame.png");
 
 		explosion1 = getImage(base, "data/BOOM.png");
@@ -175,7 +176,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	 */
 	private void downShipAnimation() {
 		downShipAnim.addFrame(spaceshipDown, 10000);
-		downShipAnim.addFrame(downOrangeFlame, 1000);
+		//downShipAnim.addFrame(downOrangeFlame, 1000);
 	}
 
 	/**
@@ -356,7 +357,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 
 			// displays the health bar
 			if (health > 0) {
-				g.drawImage(earth, 165, 380, this);
+				//g.drawImage(earth, 165, 380, this);
 			} else {
 				g.drawImage(destroyedEarth, 160, 380, this);
 			}
@@ -376,18 +377,19 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 
 			// displays spaceship laser once it reaches appropriate firing
 			// distance from the earth
+			/*
 			for (int i = 0; i < downLasers.size(); i++) {
 				if (!downEnemies.get(i).isMovingY()) {
 					g.drawImage(laser1, (int) downLasers.get(i).getCenterX() - 45,
 							(int) downLasers.get(i).getCenterY() + 25, this);
 					// System.out.println(i + " " + lasers.get(i).getCenterY());
 				}
-			}
+			}*/
 
 			// displays down ship
 			for (int i = 0; i < downEnemies.size(); i++) {
 				if (!downEnemies.get(i).isDead()) {
-					g.drawImage(downShipAnim.getImage(), (int) downEnemies.get(i).getCenterX() - 48,
+					g.drawImage(downShipAnim.getImage(), (int) downEnemies.get(i).getCenterX() - 80,
 							(int) downEnemies.get(i).getCenterY() - 48, this);
 
 					g.setFont(font);
@@ -649,11 +651,8 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 
 		score = 0;
 		health = 150;
-		
-		init();
+	
 		start();
-		run();
-		animate();
 	}
 
 	/**
