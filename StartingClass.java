@@ -51,14 +51,13 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	// Only used for write the score
 	private Font font = new Font(null, Font.BOLD, 30);
 
-	private Image image, background;
-
+	private Image image, background,screenOverlay,creditPage;
 	
 	// Pictures of enemies
 	private Image spaceshipDown, laser1;
 
 	// Pictures of Laser Gun
-	private Image currentLaserGun, laserGunImage;
+	private Image currentLaserGun, laserGunImage,stone,laserGunImage1;
 
 	private Image earth, destroyedEarth;
 
@@ -102,6 +101,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	private static boolean divisionMode  ;
 	private SoundPlayer soundPlayer = new SoundPlayer();
 	private int numberOfShips;
+	private int highScore;
 	/**
 	 * This method initializes all of the objects and images that will be in the
 	 * game. Read the actual Java documentation for this method for more
@@ -109,11 +109,11 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	 */
 	@Override
 	public void init() {
-		this.setNumberOfShips(3);
+		this.setNumberOfShips(2);
 		//default;
 		additionMode = true;
 		// Size of screen the game is in
-		setSize(600, 800);
+		setSize(700, 800);
 		setBackground(Color.BLACK);
 
 		// Idk what this does
@@ -135,11 +135,16 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 		}
 
 		// Image Setups
-		background = getImage(base, "data/newBackGround.png");
+		background = getImage(base, "data/backGroundNew.png");
+		creditPage = getImage(base, "data/Final Graphics/CreditsPage.png");
 
 		earth = getImage(base, "data/Earth.png");
+		
+		screenOverlay = getImage(base, "data/Screen Overlay2.png");
 
-		laserGunImage = getImage(base, "data/LaserGun3.png");
+		laserGunImage = getImage(base, "data/Final Graphics/NewSlingshotPuled.png");
+		laserGunImage1 = getImage(base, "data/Final Graphics/Slingshot.png");
+		stone = getImage(base,"data/Final Graphics/Stone.png");
 
 		spaceshipDown = getImage(base, "data/NewCrow.png");
 
@@ -149,9 +154,9 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 		explosion1 = getImage(base, "data/BOOM.png");
 		explosion2 = getImage(base, "data/BANG.png");
 
-		laser1 = getImage(base, "data/laser1.png");
+		laser1 = getImage(base, "data/Final Graphics/NewPoop1.png");
 
-		gameOver = getImage(base, "data/gg.png");
+		gameOver = getImage(base, "data/Final Graphics/GameOver.png");
 		yes = getImage(base, "data/RestartYes.png");
 		no = getImage(base, "data/RestartNo.png");
 		neither = getImage(base, "data/RestartNone.png");
@@ -160,6 +165,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 
 		anim = new Animation();
 		anim.addFrame(laserGunImage, 1250);
+		//anim.addFrame(laserGunImage1, 1250);
 
 		// Animation for ships
 		downShipAnim = new Animation();
@@ -198,7 +204,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 
 		// places background
 		bg1 = new Background(0, 0);
-		bg2 = new Background(-480, 0); // Should be (-480, 0)
+		//bg2 = new Background(-480, 0); // Should be (-480, 0)
 
 		laserGun = new LaserGun();
 
@@ -273,8 +279,8 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 			}
 
 			// background movement
-			bg1.update();
-			bg2.update();
+			//bg1.update();
+			//bg2.update();
 
 			// handles animations
 			animate();
@@ -350,10 +356,12 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 
 		// Don't display anything if the game is not being played currently
 		if (state == GameState.Running) {
-
+			
+			
 			// displays the background image
 			g.drawImage(background, (int) bg1.getBgX(), (int) bg1.getBgY(), this);
-			g.drawImage(background, (int) bg2.getBgX(), (int) bg2.getBgY(), this);
+			//g.drawImage(background, (int) bg2.getBgX(), (int) bg2.getBgY(), this);
+			g.drawImage(screenOverlay,570,0,this);
 
 			// displays the health bar
 			if (health > 0) {
@@ -366,25 +374,26 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 			projectiles = laserGun.getProjectiles();
 			for (currentIndex = 0; currentIndex < projectiles.size(); currentIndex++) {
 				Projectile p = (Projectile) projectiles.get(currentIndex);
-				g.setColor(Color.MAGENTA);
+				//g.setColor(Color.MAGENTA);
 
 				// size of laser
-				g.fillRect(p.getX(), p.getY(), 5, 50);
+				//g.fillRect(p.getX(), p.getY(), 5, 50);
+				g.drawImage(stone, p.getX(), p.getY(), 30, 30, this);
 			}
 
 			// displays the laser gun at the bottom of the screen
-			g.drawImage(currentLaserGun, laserGun.getCenterX() - 61, laserGun.getCenterY() - 63, this);
+			g.drawImage(currentLaserGun, laserGun.getCenterX()-93 , laserGun.getCenterY()-60 , this);
 
 			// displays spaceship laser once it reaches appropriate firing
 			// distance from the earth
-			/*
+			
 			for (int i = 0; i < downLasers.size(); i++) {
 				if (!downEnemies.get(i).isMovingY()) {
 					g.drawImage(laser1, (int) downLasers.get(i).getCenterX() - 45,
 							(int) downLasers.get(i).getCenterY() + 25, this);
 					// System.out.println(i + " " + lasers.get(i).getCenterY());
 				}
-			}*/
+			}
 
 			// displays down ship
 			for (int i = 0; i < downEnemies.size(); i++) {
@@ -414,7 +423,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 			// writes the current score
 			g.setFont(font);
 			g.setColor(Color.WHITE);
-			g.drawString(Integer.toString(score), 300, 740);
+			g.drawString("score " + score, 570, 740);
 
 			g.setColor(Color.CYAN);
 
@@ -422,12 +431,13 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 			if (readyForNewEquation) {
 				equation = getEquation();
 			}
-			g.drawString(equation, 50, 740);
+			g.drawString(equation, 580, 300);
 			
 			
 			// displays health bar
 			g.setColor(Color.WHITE);
-			g.fillRect(300, 750, 154, 29);
+			g.fillRect(570, 750, 120, 29);
+	
 
 			// Changes health bar color based on amount of health
 			if (health <= 50) {
@@ -438,23 +448,25 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 				g.setColor(Color.GREEN);
 			}
 
-			g.fillRect(302, 752, (int) health, 25);
+			g.fillRect(570, 752, (int) health - 30, 25);
 			
 			// gamemode
 			font.isBold();
 			g.setFont(font);
 			//g.drawString("use keys to cyle through game mode", 200, 50);
-			g.drawString("game mode", 300, 100);
-			
-			g.setColor(Color.ORANGE);
+			//g.drawString("game mode", 300, 100);
+			//display High Score
+			int gameModeXCor = 609;
+			int gameModeYCor = 483;
+			g.setColor(Color.BLACK);
 			if(this.additionMode){
-				g.drawString( " + ", 300 ,150);
+				g.drawString( " + ", gameModeXCor , gameModeYCor);
 			}else if (this.subtractionMode){
-				g.drawString( " - " , 300, 150);
+				g.drawString( " - " , gameModeXCor, gameModeYCor);
 			}else if (this.divisionMode){
-				g.drawString(" / ", 300, 150);
+				g.drawString(" / ", gameModeXCor, gameModeYCor);
 			}else{
-				g.drawString( " x ", 300,150);
+				g.drawString( " x ", gameModeXCor,gameModeYCor);
 			}
 			
 			
@@ -486,20 +498,28 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 
 		// Player has lost
 		else if (state == GameState.Dead) {
+			if(highScore<this.score){
+				highScore = this.score;
+			}else{
+				
+			}
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, 800, 480);
 			g.drawImage(background, 0, 0, this);
-			g.drawImage(gameOver, 50, 0, this);
-			g.drawImage(currentGameOver, 50, 500, this);
-
+			g.drawImage(gameOver, 0, 0, this);
+			g.drawImage(currentGameOver, 130, 500, this);
+			g.setFont(font);
+			g.setColor(Color.RED);
+			g.drawString("high Score: " + this.getHighScore(), 40, 50);
+		
 			// System.out.println("lost");
 			repaint();
 		}
 
-		// This will be the main menu
+		// This will be the credit page
 		else {
-			g.setColor(Color.PINK);
-			g.fillRect(0, 0, 480, 800);
+			g.drawImage(creditPage, 0, 0,700 , 800, this);
+			
 		}
 	}
 
@@ -718,7 +738,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 			op.initiate(ranEnemy);
 			sign = " * ";
 		}
-		return op.getLeft() + sign + op.getRight()+ " = ?";
+		return op.getLeft() + sign + op.getRight();
 	}
 	void playtheme(){
 		while(this.state == GameState.Running){
@@ -773,5 +793,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	public int getNumberOfships(){
 		return this.numberOfShips;
 	}
-	 
+	public int getHighScore(){
+		return highScore;
+	}
 }
