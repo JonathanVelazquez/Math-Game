@@ -109,9 +109,12 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	 */
 	@Override
 	public void init() {
-		this.setNumberOfShips(2);
+		this.setNumberOfCrows(2);
 		//default;
 		additionMode = true;
+		subtractionMode = false;
+		multiplicationMode = false;
+		divisionMode = false;
 		// Size of screen the game is in
 		setSize(700, 800);
 		setBackground(Color.BLACK);
@@ -522,7 +525,6 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 			
 		}
 	}
-
 	/**
 	 * Handles actions when keys are pressed on the keyboard. Left, right,
 	 * space, and enter.
@@ -787,7 +789,7 @@ public class StartingClass extends Applet implements Runnable, KeyListener {
 	public static boolean getDivisionMode(){
 		return divisionMode;
 	}
-	public void setNumberOfShips(int n){
+	public void setNumberOfCrows(int n){
 		this.numberOfShips = n;
 	}
 	public int getNumberOfships(){
